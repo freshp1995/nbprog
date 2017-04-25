@@ -5,7 +5,7 @@ import java.util.concurrent.*;
 /**
  * Created by patrick on 4/25/17.
  */
-public class main {
+public class Main {
 
     public static void main(String[] args) throws InterruptedException {
         Database database = new Database(1000);
