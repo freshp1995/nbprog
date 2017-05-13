@@ -10,7 +10,7 @@ public class ExpensiveObject {
         expensive++;
     }
 
-    public synchronized int getExpensive() {
+    public int getExpensive() {
         this.addExpensive();
         return this.expensive;
     }

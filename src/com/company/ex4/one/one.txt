@@ -1,0 +1,26 @@
+i) I am simply starting for Threads in a Row and then i am checking there Hashcode. That
+way i can check if i have always the same object or if they are different.
+
+output:
+
+Thread one 	    : 794389744
+Thread three	: 1119681523
+Thread two 	    : 1537790783
+Thread four 	: 1574534510
+
+ii)
+
+Two possible Solution for a Thread safe getInstance would be with synchronized or a simple lock.
+(Methodes: getInstanceTS1 nad getInstanceTS2 in class LazyInitRaceCondition)
+
+Synchronized output:
+Thread one 	    : 1559507295
+Thread two 	    : 1559507295
+Thread three	: 1559507295
+Thread four 	: 1559507295
+
+Lock output:
+Thread one 	    : 1559507295
+Thread two 	    : 1559507295
+Thread three	: 1559507295
+Thread four 	: 1559507295
