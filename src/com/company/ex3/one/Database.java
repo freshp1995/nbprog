@@ -43,6 +43,7 @@ public class Database implements ReadWrite {
         int temp = 0;
         try {
             this.acquireRead();
+            System.out.println("read");
             temp = data[Math.abs(random.nextInt() % this.size)];
         } finally {
             this.releaseRead();
@@ -54,6 +55,7 @@ public class Database implements ReadWrite {
 
         try {
             this.acquireWrite();
+            System.out.println("write");
             data[Math.abs(random.nextInt() % this.size)] = random.nextInt();
         } finally {
             this.releaseWrite();
