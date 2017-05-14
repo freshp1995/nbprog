@@ -14,37 +14,18 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public class UnsafeCachingFactorizer extends GenericServlet implements Servlet {
 
-    //the global variables
-    //the access to them must be synchronized
-    private final AtomicReference<BigInteger> lastNumber = new AtomicReference<>();
-    private final AtomicReference<BigInteger[]> lastFactors = new AtomicReference<>();
+    private volatile OneValueCache cache = new OneValueCache(null, null);
 
-    private synchronized BigInteger getLastNumber() {
-        return this.lastNumber.get();
-    }
-
-    private synchronized BigInteger[] getLastfactors() {
-        return this.lastFactors.get();
-    }
-
-    private synchronized void setLastNumber(BigInteger number) {
-        this.lastNumber.set(number);
-    }
-
-    private synchronized void setLastFactors(BigInteger[] factors) {
-        this.lastFactors.set(factors);
-    }
 
 
     @Override
     public void service(ServletRequest req, ServletResponse resp) throws ServletException, IOException {
         BigInteger i = extractFromRequest(req);
-        if (this.getLastNumber() != null && i.equals(this.getLastNumber())) {
-            encodeIntoResponse(resp, this.getLastfactors());
+        if (this.cache.getLastNum() != null && i.equals(this.cache.getLastNum())) {
+            encodeIntoResponse(resp, this.cache.getFactors());
         } else {
             BigInteger[] factors = factor(i);
-            this.setLastNumber(i);
-            this.setLastFactors(factors);
+            cache = new OneValueCache(i, factors);
             encodeIntoResponse(resp, factors);
         }
     }
@@ -82,5 +63,26 @@ public class UnsafeCachingFactorizer extends GenericServlet implements Servlet {
 
     private BigInteger extractFromRequest(ServletRequest req) {
         return new BigInteger(req.getParameter("number"));
+    }
+
+
+    public class OneValueCache {
+
+        private final BigInteger lastNum;
+        private final BigInteger[] lastFactors;
+
+        public OneValueCache(BigInteger i, BigInteger[] lastFactors) {
+            this.lastNum = i;
+            this.lastFactors = lastFactors;
+        }
+
+        public BigInteger[] getFactors() {
+            return Arrays.copyOf(lastFactors, lastFactors.length);
+        }
+
+        public BigInteger getLastNum() {
+            return this.lastNum;
+        }
+
     }
 }

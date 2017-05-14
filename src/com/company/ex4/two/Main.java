@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Random;
 
 /**
  * Created by patricklanzinger on 14.05.17.
@@ -13,15 +14,19 @@ public class Main {
 
     public static void main(String[] args) {
 
-        new Thread(Main::sendGet).start();
+        int loops = 10;
+        for (int i = 0; i < loops; i++)
+            new Thread(Main::sendGet).start();
 
     }
 
 
-    public static void sendGet(){
+    public static void sendGet() {
         try {
 
-            String url = "http://localhost:8080/test?number=123";
+            Random rnd = new Random();
+            String number = Integer.toString(rnd.nextInt());
+            String url = "http://localhost:8080/test?number=" + number;
 
             URL obj = new URL(url);
             HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
@@ -30,9 +35,6 @@ public class Main {
 
             connection.setRequestProperty("User-Agent", USER_AGENT);
 
-            int responseCode = connection.getResponseCode();
-            System.out.println("\nSending 'GET' request to URL : " + url);
-            System.out.println("Response Code : " + responseCode);
 
             BufferedReader in = new BufferedReader(
                     new InputStreamReader(connection.getInputStream()));
@@ -45,7 +47,7 @@ public class Main {
             in.close();
 
             //print result
-            System.out.println(response.toString());
+            System.out.println(response.toString() + " : " + number);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
