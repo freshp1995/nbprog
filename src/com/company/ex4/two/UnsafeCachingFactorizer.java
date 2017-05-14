@@ -6,8 +6,6 @@ import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Created by patricklanzinger on 12.05.17.
@@ -53,7 +51,7 @@ public class UnsafeCachingFactorizer extends GenericServlet implements Servlet {
 
             PrintWriter w = resp.getWriter();
             w.append(Arrays.toString(bigIntegers));
-
+            w.close();
 
         } catch (IOException e) {
             e.printStackTrace();

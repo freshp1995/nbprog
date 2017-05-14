@@ -25,7 +25,7 @@ public class Main {
         try {
 
             Random rnd = new Random();
-            String number = Integer.toString(rnd.nextInt());
+            String number = Integer.toString(rnd.nextInt()); //todo because of that line sometimes the programm does not finish
             String url = "http://localhost:8080/test?number=" + number;
 
             URL obj = new URL(url);
