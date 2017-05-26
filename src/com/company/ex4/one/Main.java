@@ -8,7 +8,7 @@ public class Main {
 
     public static void main(String[] args) throws InterruptedException {
         Main m = new Main();
-        int i = 2;
+        int i = 0;
 
         switch (i){
             case 0: {

@@ -1,0 +1,50 @@
+Platform Mac OS
+2,6 GHZ i5
+8GB RAM
+
+
+1)
+MAX threads: 2.028
+Memory: Rises till 124MB
+
+I can give the JVM more memory with that command (-Xmx2048m) to create more threads. But this leafs the number of MAX
+threads remains the same because the OS does not support more.
+
+2)
+
+repetitions = 1900000
+
+a)
+Pi: 3.141614242105263275895578688409602220513318714342619
+error: 0,000022
+time consumed: 112.411,520790
+
+b)
+1 thread:
+Pi: 3.141545953684210644393646673147725921712423625745271
+error: 0,000047
+time consumed: 104.130,571446
+
+2 thread:
+Pi: 3.141595829473684328583026863151118098022906403792532
+error: 0,000003
+time consumed: 55.222,599902
+
+4 thread:
+Pi: 3.141675229473684328620592135681171815744356105202123
+error: 0,000083
+time consumed: 33.074,452947
+
+20 thread:
+Pi: 3.141531450526315907515988095311561329780440581472296
+error: 0,000061
+time consumed: 33.546,335751
+
+The speedup for the parallel program over the sequential is as expected.
+Also that when you use more threads than cores, there is no speedup.
+
+I have a 4core i5 with 2,6 GHZ that is running with mac OS sierra.
+The best way to optimize the execution is to set the number of threads equal to the number of cores.
+And to calculate the average in parallel.
+
+My maximal achievable speedup would be nearly 3,5(3,39). (33sec with 4 threads, 112 sequential).
