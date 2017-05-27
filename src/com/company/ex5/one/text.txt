@@ -1,0 +1,2 @@
+I simply added a sleep with a random time. That way you are never sure what the value of the variable is
+after the method was called.
