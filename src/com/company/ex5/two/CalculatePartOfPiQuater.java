@@ -1,14 +1,13 @@
 package com.company.ex5.two;
 
+import org.omg.PortableServer.THREAD_POLICY_ID;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
 import static java.lang.Math.abs;
 
@@ -17,61 +16,85 @@ import static java.lang.Math.abs;
  */
 public class CalculatePartOfPiQuater {
     private static int repetitions = 1900000;
-    private static int iterations = 1000;
+    private int iterations = 1000;
+    private int numberOfFuture = 100;
+    private Random rnd = new Random();
 
-    private double calcPi() {
+    private static double serialDuration = 0;
+
+    public CalculatePartOfPiQuater(int iterations, int numberOfFuture) {
+        this.iterations = iterations;
+        this.numberOfFuture = numberOfFuture;
+    }
+
+    private double pi() {
         Random rnd = new Random();
 
         int count = 0;
 
         for (int i = 0; i < iterations; i++) {
-            double x_val = rnd.nextDouble();
-            double y_val = rnd.nextDouble();
+            double x = rnd.nextDouble();
+            double y = rnd.nextDouble();
 
-            if (Math.sqrt(x_val * x_val + y_val * y_val) <= 1)
+            if (Math.sqrt(x * x + y * y) <= 1)
                 count++;
+
         }
         return count * 4.0 / iterations;
     }
 
-    public void parallelCalculation(int nThreads) {
+    private Helper repCalc() {
+        BigDecimal sum = BigDecimal.ZERO;
         Double errorSum = 0.0;
+
+        for (int i = 0; i < repetitions / numberOfFuture; i++) {
+            BigDecimal pi = new BigDecimal(pi());
+            Double error = abs(Math.PI - pi.doubleValue());
+
+            errorSum += error;
+            sum = sum.add(pi);
+        }
+
+        return new CalculatePartOfPiQuater.Helper(errorSum, sum);
+    }
+
+    private CalculatePartOfPiQuater.Helper makeAverage() throws ExecutionException, InterruptedException {
+
+        BigDecimal sum = BigDecimal.ZERO;
+        Double errorSum = 0.0;
+
+        ArrayList<FutureTask<Helper>> tasks = new ArrayList<>();
+        for (int i = 0; i < this.numberOfFuture; i++) {
+            FutureTask temp = new FutureTask<Helper>(this::repCalc);
+            new Thread(temp).start();
+            tasks.add(temp);
+        }
+
+        System.out.println("started everything");
+        for (int i = 0; i < numberOfFuture; i++) {
+
+            CalculatePartOfPiQuater.Helper result = tasks.get(i).get();
+
+            errorSum += result.getError();
+            sum = sum.add(result.getPi());
+        }
+
+        BigDecimal pi = sum.divide(new BigDecimal(repetitions), RoundingMode.HALF_UP);
+        Double averageError = errorSum / repetitions;
+        Double error = abs(Math.PI - pi.doubleValue());
+
+        return new CalculatePartOfPiQuater.Helper(error, pi);
+    }
+
+
+    public void serialCalculation() throws ExecutionException, InterruptedException {
 
         long startTime = System.nanoTime();
 
-        ExecutorService executor = Executors.newFixedThreadPool(nThreads);
-        List<Future<Double>> results = new ArrayList<>(repetitions);
+        CalculatePartOfPiQuater.Helper h = makeAverage();
 
-        for (int i = 0; i < repetitions; i++) {
-
-            Callable<Double> task = this::calcPi;
-            results.add(executor.submit(task));
-        }
-
-        BigDecimal sum = BigDecimal.ZERO;
-        for (int i = 0; i < repetitions; i++) {
-            try {
-                BigDecimal pi = new BigDecimal(results.get(i).get());
-                Double error = abs(Math.PI - pi.doubleValue());
-
-                errorSum += error;
-
-                sum = sum.add(pi);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        executor.shutdown();
-
-        double durationMs = (double) (System.nanoTime() - startTime) * 1e-6;
-        Double averageError = errorSum / repetitions;
-
-        BigDecimal pi = sum.divide(new BigDecimal(repetitions), RoundingMode.HALF_UP);
-        Double error = abs(Math.PI - pi.doubleValue());
-
-        output(pi.toString(), error, durationMs);
+        serialDuration = (double) (System.nanoTime() - startTime) * 1e-6;
+        output(h.getPi().toString(), h.getError(), serialDuration);
     }
 
     private void output(String pi, Double error, Double time) {

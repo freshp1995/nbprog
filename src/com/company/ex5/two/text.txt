@@ -1,0 +1,5 @@
+One generally big advantage of FutureTask is the return value often you are not sure
+when the value has been calculated but with FutureTask this class does that for you.
+
+And for the second advantage, development is much more easier if you don't have to consider
+when a value is available.
