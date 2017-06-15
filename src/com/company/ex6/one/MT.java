@@ -1,7 +1,6 @@
-package com.company.ex6;
+package com.company.ex6.one;
 
 import java.util.Random;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -9,8 +8,8 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class MT implements MonitoringThread {
 
-    private Boolean working = Boolean.TRUE;
-    private Boolean sleeping = Boolean.TRUE;
+    private volatile Boolean working = Boolean.FALSE;
+    private volatile Boolean sleeping = Boolean.TRUE;
     private Random rnd = new Random();
     private StopperThread stopperThread;
 
@@ -21,8 +20,17 @@ public class MT implements MonitoringThread {
     @Override
     public void run() {
 
+        while (!working) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
         while (true) {
             // thread sleeps for one second
+            working = true;
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -32,40 +40,60 @@ public class MT implements MonitoringThread {
             // calculate probability of intrusion
             int temp = ThreadLocalRandom.current().nextInt(0, 10);
             if (temp > 2) {
-                System.out.printf("no intrusion");
+                System.out.println("intrusion");
                 stopperThread.intrusion();
             } else {
-                System.out.printf("intrusion");
+                System.out.println("no intrusion");
             }
 
             // wait for restart of thread
             while (working) {
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                if (working) {
-                    System.out.println("I am working");
-                }
+                System.out.println("I am working");
+
             }
 
-            while (sleeping) try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            while (sleeping) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                System.out.println("sleeping");
             }
         }
     }
 
 
     @Override
-    public void setNotWorking(Boolean working) {
-        this.working = working;
+    public void setWorking(Boolean working) {
+        synchronized (this.working) {
+            this.working = working;
+        }
     }
 
     @Override
     public void setSleeping(Boolean sleeping) {
-        this.sleeping = sleeping;
+        synchronized (this.sleeping) {
+            this.sleeping = sleeping;
+        }
+    }
+
+    @Override
+    public Boolean getWorking() {
+        synchronized (this.working) {
+            return this.working;
+        }
+    }
+
+    @Override
+    public Boolean getSleeping() {
+        synchronized (this.sleeping) {
+            return this.sleeping;
+        }
     }
 }

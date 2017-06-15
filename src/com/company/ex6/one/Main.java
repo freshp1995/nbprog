@@ -1,104 +1,25 @@
-package com.company.ex6;
+package com.company.ex6.one;
 
-import java.sql.Time;
 import java.util.ArrayList;
 
 /**
  * Created by patricklanzinger on 12.06.17.
  */
 public class Main {
-    private static ArrayList<Thread> mts = new ArrayList<>();
-
-    private static int M = 1;
-    private volatile static long time;
-    private volatile static Boolean toggle = true;
-    private volatile static Boolean interupt = false;
 
     public static void main(String[] args) {
-        for (int i = 0; i < M; i++) {
-            mts.add(new Thread(Main::MT));
-        }
 
-        new Thread(Main::ST).start();
-        new Thread(Main::STP).start();
-        while (true) {
-            time = System.currentTimeMillis();
-        }
-    }
+        //init everything
+        WorkerTimer timer = new WorkerTimer();
+        ST st = new ST(timer);
+        SPT spt = new SPT(timer);
 
-    public static void ST() {
-        while (true) {
-            if (((int)(time / 1000)) % 10 == 0 && toggle) {
-                System.out.println("Start MT");
-                interupt = false;
-                for (int i = 0; i < M; i++) {
-                    mts.get(i).start();
-                }
+        st.init(1, spt);
+        spt.addMt(st.getMt());
 
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                toggle = !toggle;
-            }
-
-            try {
-                Thread.sleep(1);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            try {
-                Thread.sleep(1);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public static void STP() {
-        while (true) {
-            if (((int) (time / 1000)) % 10 == 0 && !toggle) {
-                System.out.println("Stop MT");
-                interupt = true;
-                for (int i = 0; i < M; i++) {
-                    try {
-                        mts.get(i).join();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                toggle = !toggle;
-            }
-        }
-    }
-
-    public static void MT() {
-        while (true) {
-            System.out.println("Monitoring Thread: " + time);
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            if (interupt) {
-                break;
-            }
-
-            try {
-                Thread.sleep(1);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+        //start the threads
+        new Thread(timer).start();
+        new Thread(st).start();
+        new Thread(spt).start();
     }
 }

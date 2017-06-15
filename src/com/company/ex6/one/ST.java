@@ -1,4 +1,4 @@
-package com.company.ex6;
+package com.company.ex6.one;
 
 import java.util.ArrayList;
 
@@ -7,14 +7,50 @@ import java.util.ArrayList;
  */
 public class ST implements Runnable {
 
-    private ArrayList<MonitoringThread> mt;
+    private ArrayList<MonitoringThread> mt = new ArrayList<>();
+    private Timer timer;
 
-    public ST(ArrayList<MonitoringThread> mt) {
-        this.mt = mt;
+    public ST(Timer timer) {
+        this.timer = timer;
+    }
+
+    public void init(int n, StopperThread spt) {
+        for (int i = 0; i < n; i++) {
+            this.mt.add(new MT(spt));
+        }
+    }
+
+    public ArrayList<MonitoringThread> getMt() {
+        return this.mt;
     }
 
     @Override
     public void run() {
-        
+        for (MonitoringThread mt : this.mt) {
+            new Thread(mt).start();
+        }
+
+        while (true) {
+            if (this.timer.getValue()) {
+                Boolean temp = false;
+                for (MonitoringThread mt : this.mt) {
+                    if (mt.getSleeping() && !mt.getWorking()) {
+                        mt.setWorking(true);
+                        mt.setSleeping(false);
+                        temp = true;
+                    }
+                }
+
+                if (temp) {
+                    System.out.println("Start mts");
+                }
+            }
+
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

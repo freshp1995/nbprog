@@ -1,4 +1,4 @@
-package com.company.ex6;
+package com.company.ex6.one;
 
 import java.util.ArrayList;
 
@@ -8,14 +8,30 @@ import java.util.ArrayList;
 public class SPT implements StopperThread {
 
     private ArrayList<MonitoringThread> mt;
+    private Timer timer;
 
-    public SPT(ArrayList<MonitoringThread> mt) {
+    public SPT(Timer timer) {
+        this.timer = timer;
+    }
+
+    public void addMt(ArrayList<MonitoringThread> mt) {
         this.mt = mt;
     }
 
     @Override
     public void run() {
-        this.setThreadsSleeping();
+
+        while (true) {
+            if (!this.timer.getValue()) {
+                this.setThreadsSleeping();
+            }
+
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
@@ -24,9 +40,17 @@ public class SPT implements StopperThread {
     }
 
     private void setThreadsSleeping() {
+        Boolean temp = false;
         for (MonitoringThread m : this.mt) {
-            m.setSleeping(true);
+            if (!m.getSleeping() && m.getWorking()) {
+                m.setSleeping(true);
+                m.setWorking(false);
+                temp = true;
+            }
+        }
 
+        if (temp) {
+            System.out.println("stop mts");
         }
     }
 }
