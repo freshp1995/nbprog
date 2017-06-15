@@ -1,0 +1,6 @@
+cons:
+Yes you can use only one STP Thread. But the hanlding would be much more difficult.
+It would not be that easy to decide what MT List should stop working.
+
+pros:
+With one STP you would certainly save some resources. And you would also have less code.

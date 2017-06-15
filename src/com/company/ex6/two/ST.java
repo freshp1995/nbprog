@@ -1,4 +1,6 @@
-package com.company.ex6.one;
+package com.company.ex6.two;
+
+import com.company.ex6.one.*;
 
 import java.util.ArrayList;
 
@@ -7,42 +9,54 @@ import java.util.ArrayList;
  */
 public class ST implements Runnable {
 
-    private ArrayList<MonitoringThread> mt = new ArrayList<>();
-    private Timer timer;
+    private ArrayList<ArrayList<MonitoringThread>> mt = new ArrayList<>();
+    private ArrayList<WorkerTimer> timer;
 
-    public ST(Timer timer) {
+    public ST(ArrayList<WorkerTimer> timer) {
         this.timer = timer;
     }
 
-    public void init(int n, StopperThread spt) {
-        for (int i = 0; i < n; i++) {
-            this.mt.add(new MT(spt));
+    public void init(int n, ArrayList<StopperThread> spt) {
+
+        ArrayList<MonitoringThread> temp;
+        for (StopperThread s : spt) {
+            temp = new ArrayList<>();
+            for (int i = 0; i < n; i++) {
+                temp.add(new MT(s));
+            }
+            mt.add(temp);
         }
     }
 
-    public ArrayList<MonitoringThread> getMt() {
+    public ArrayList<ArrayList<MonitoringThread>> getMt() {
         return this.mt;
     }
 
     @Override
     public void run() {
-        for (MonitoringThread mt : this.mt) {
-            new Thread(mt).start();
+        for (ArrayList<MonitoringThread> m : this.mt) {
+            for (MonitoringThread mt : m) {
+                new Thread(mt).start();
+            }
         }
 
         while (true) {
-            if (this.timer.getValue()) {
-                Boolean temp = false;
-                for (MonitoringThread mt : this.mt) {
-                    if (mt.getSleeping() && !mt.getWorking()) {
-                        mt.setWorking(true);
-                        mt.setSleeping(false);
-                        temp = true;
-                    }
-                }
 
-                if (temp) {
-                    System.out.println("Start mts");
+            for (int i = 0; i < 4; i++) {
+                if (timer.get(i).getValue()) {
+                    Boolean temp = false;
+                    for (MonitoringThread mt : this.mt.get(i)) {
+                        if (mt.getSleeping() && !mt.getWorking()) {
+                            mt.setSleeping(false);
+                            mt.setWorking(true);
+                            temp = true;
+
+                        }
+                    }
+
+                    if (temp) {
+                        System.out.println("Start mts");
+                    }
                 }
             }
 
