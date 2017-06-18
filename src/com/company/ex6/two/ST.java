@@ -16,15 +16,17 @@ public class ST implements Runnable {
         this.timer = timer;
     }
 
-    public void init(int n, ArrayList<StopperThread> spt) {
+    public void init(int n, ArrayList<StopperThread> spt, ArrayList<Integer> infos) {
 
+        int count = 0;
         ArrayList<MonitoringThread> temp;
         for (StopperThread s : spt) {
             temp = new ArrayList<>();
             for (int i = 0; i < n; i++) {
-                temp.add(new MT(s));
+                temp.add(new MT(s, infos.get(count)));
             }
             mt.add(temp);
+            count++;
         }
     }
 

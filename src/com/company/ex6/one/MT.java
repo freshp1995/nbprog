@@ -8,13 +8,17 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class MT implements MonitoringThread {
 
-    private volatile Boolean working = Boolean.FALSE;
-    private volatile Boolean sleeping = Boolean.TRUE;
+    private Boolean working = Boolean.FALSE;
+    private Boolean sleeping = Boolean.TRUE;
+    private Boolean intrusionCleared = Boolean.TRUE;
     private Random rnd = new Random();
     private StopperThread stopperThread;
 
-    public MT(StopperThread stopperThread) {
+    private Integer info;
+
+    public MT(StopperThread stopperThread, Integer info) {
         this.stopperThread = stopperThread;
+        this.info = info;
     }
 
     @Override
@@ -40,10 +44,9 @@ public class MT implements MonitoringThread {
             // calculate probability of intrusion
             int temp = ThreadLocalRandom.current().nextInt(0, 10);
             if (temp > 2) {
-                System.out.println("intrusion");
-                stopperThread.intrusion();
+                stopperThread.intrusion(this.info);
             } else {
-                System.out.println("no intrusion");
+                System.out.println("No Intrusion");
             }
 
             // wait for restart of thread
@@ -94,6 +97,20 @@ public class MT implements MonitoringThread {
     public Boolean getSleeping() {
         synchronized (this.sleeping) {
             return this.sleeping;
+        }
+    }
+
+    @Override
+    public Boolean getIntrusionCleared() {
+        synchronized (this.intrusionCleared) {
+            return intrusionCleared;
+        }
+    }
+
+    @Override
+    public void setIntrusionCleared(Boolean intrusionCleared) {
+        synchronized (this.intrusionCleared) {
+            this.intrusionCleared = intrusionCleared;
         }
     }
 }

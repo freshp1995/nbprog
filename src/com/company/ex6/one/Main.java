@@ -14,7 +14,7 @@ public class Main {
         ST st = new ST(timer);
         SPT spt = new SPT(timer);
 
-        st.init(1, spt);
+        st.init(1, spt, 0);
         spt.addMt(st.getMt());
 
         //start the threads

@@ -7,7 +7,7 @@ import java.util.ArrayList;
  */
 public class SPT implements StopperThread {
 
-    private ArrayList<MonitoringThread> mt;
+    protected ArrayList<MonitoringThread> mt;
     private Timer timer;
 
     public SPT(Timer timer) {
@@ -35,11 +35,12 @@ public class SPT implements StopperThread {
     }
 
     @Override
-    public void intrusion() {
+    public void intrusion(Integer info) {
+        System.out.println("Intrusion: " + info);
         this.setThreadsSleeping();
     }
 
-    private void setThreadsSleeping() {
+    protected void setThreadsSleeping() {
         Boolean temp = false;
         for (MonitoringThread m : this.mt) {
             if (!m.getSleeping() && m.getWorking()) {

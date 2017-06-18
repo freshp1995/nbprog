@@ -11,4 +11,8 @@ public interface MonitoringThread extends Runnable {
     Boolean getWorking();
 
     Boolean getSleeping();
+
+    Boolean getIntrusionCleared();
+
+    void setIntrusionCleared(Boolean intrusionCleared);
 }

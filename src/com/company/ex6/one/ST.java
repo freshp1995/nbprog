@@ -14,9 +14,9 @@ public class ST implements Runnable {
         this.timer = timer;
     }
 
-    public void init(int n, StopperThread spt) {
+    public void init(int n, StopperThread spt, Integer info) {
         for (int i = 0; i < n; i++) {
-            this.mt.add(new MT(spt));
+            this.mt.add(new MT(spt, info));
         }
     }
 
@@ -34,7 +34,7 @@ public class ST implements Runnable {
             if (this.timer.getValue()) {
                 Boolean temp = false;
                 for (MonitoringThread mt : this.mt) {
-                    if (mt.getSleeping() && !mt.getWorking()) {
+                    if (mt.getSleeping() && !mt.getWorking() && mt.getIntrusionCleared()) {
                         mt.setWorking(true);
                         mt.setSleeping(false);
                         temp = true;
