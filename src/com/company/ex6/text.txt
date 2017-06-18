@@ -1,5 +1,4 @@
 2.
-
 cons:
 Yes you can use only one STP Thread. But the hanlding would be much more difficult.
 It would not be that easy to decide what MT List should stop working.
@@ -14,3 +13,8 @@ a) My program should not come in a deadlock state.
    have solved the intrusion the MonitorThreads would never be started again they would sleep forever.
 b) My program is starvation free. But if i would forget to set current and next to 0 (Cars) then nobody would have
    the possibility to use this cars to prevent intrusion.
+
+
+Note:
+https://github.com/freshp1995/nbprog
+Maybe for testing the whole project is better (src/com/company/ex6/)
