@@ -42,6 +42,8 @@ public class Main {
         names.add(3);
         names.add(4);
         names.add(1);
+
+        //number of MT threads for each direction
         st.init(1, temp, names);
         spt_east.addMt(st.getMt().get(0));
         spt_west.addMt(st.getMt().get(1));

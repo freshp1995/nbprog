@@ -33,6 +33,8 @@ public class Car implements Runnable {
 
     @Override
     public void run() {
+
+        // the car checks also if another direction has been assigned
         do {
             try {
                 Thread.sleep(100);

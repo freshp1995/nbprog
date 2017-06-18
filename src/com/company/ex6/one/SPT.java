@@ -22,7 +22,11 @@ public class SPT implements StopperThread {
     public void run() {
 
         while (true) {
+
+            // switch between start stop when timer has specific value
             if (!this.timer.getValue()) {
+
+                // make all threads sleep
                 this.setThreadsSleeping();
             }
 
@@ -34,6 +38,7 @@ public class SPT implements StopperThread {
         }
     }
 
+    // this function will be called if an intrusion is detected
     @Override
     public void intrusion(Integer info) {
         System.out.println("Intrusion: " + info);
